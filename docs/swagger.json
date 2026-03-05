@@ -1,0 +1,354 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample CRUD API for inventory management system",
+        "title": "Inventory Management API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.example.com/support",
+            "email": "support@example.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/items": {
+            "get": {
+                "description": "Retrieve all items from the inventory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Get all items",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemsListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add a new item to the inventory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Item data",
+                        "name": "item",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/items/category/{category}": {
+            "get": {
+                "description": "Retrieve all items in a specific category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Get items by category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category name",
+                        "name": "category",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemsListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/items/search": {
+            "get": {
+                "description": "Search items by name (case-insensitive)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Search items",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search query",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemsListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/items/{id}": {
+            "get": {
+                "description": "Retrieve a specific item by its unique identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing item's information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Update item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated item data",
+                        "name": "item",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove an item from the inventory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Delete item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Item": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "description": "Category the item belongs to",
+                    "type": "string",
+                    "example": "Electronics"
+                },
+                "description": {
+                    "description": "Detailed description of the item",
+                    "type": "string",
+                    "example": "MacBook Pro"
+                },
+                "id": {
+                    "description": "Unique identifier for the item",
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "description": "Name of the item",
+                    "type": "string",
+                    "example": "Laptop"
+                },
+                "price": {
+                    "description": "Price of the item in dollars",
+                    "type": "integer",
+                    "example": 1500
+                },
+                "quantity": {
+                    "description": "Available quantity in stock",
+                    "type": "integer",
+                    "example": 10
+                }
+            }
+        },
+        "models.ItemRequest": {
+            "type": "object",
+            "required": [
+                "category",
+                "name",
+                "price",
+                "quantity"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string",
+                    "example": "Electronics"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "MacBook Pro"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Laptop"
+                },
+                "price": {
+                    "type": "integer",
+                    "example": 1500
+                },
+                "quantity": {
+                    "type": "integer",
+                    "example": 10
+                }
+            }
+        },
+        "models.ItemResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Pointer to item, can be nil for empty responses",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Item"
+                        }
+                    ]
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Item retrieved successfully"
+                }
+            }
+        },
+        "models.ItemsListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Slice of items",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Item"
+                    }
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Items retrieved successfully"
+                },
+                "total": {
+                    "description": "Total count of items",
+                    "type": "integer",
+                    "example": 5
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "description": "Operations for managing inventory items",
+            "name": "items"
+        }
+    ]
+}

@@ -1,0 +1,240 @@
+basePath: /api/v1
+definitions:
+  models.Item:
+    properties:
+      category:
+        description: Category the item belongs to
+        example: Electronics
+        type: string
+      description:
+        description: Detailed description of the item
+        example: MacBook Pro
+        type: string
+      id:
+        description: Unique identifier for the item
+        example: 1
+        type: integer
+      name:
+        description: Name of the item
+        example: Laptop
+        type: string
+      price:
+        description: Price of the item in dollars
+        example: 1500
+        type: integer
+      quantity:
+        description: Available quantity in stock
+        example: 10
+        type: integer
+    type: object
+  models.ItemRequest:
+    properties:
+      category:
+        example: Electronics
+        type: string
+      description:
+        example: MacBook Pro
+        type: string
+      name:
+        example: Laptop
+        type: string
+      price:
+        example: 1500
+        type: integer
+      quantity:
+        example: 10
+        type: integer
+    required:
+    - category
+    - name
+    - price
+    - quantity
+    type: object
+  models.ItemResponse:
+    properties:
+      data:
+        allOf:
+        - $ref: '#/definitions/models.Item'
+        description: Pointer to item, can be nil for empty responses
+      message:
+        example: Item retrieved successfully
+        type: string
+    type: object
+  models.ItemsListResponse:
+    properties:
+      data:
+        description: Slice of items
+        items:
+          $ref: '#/definitions/models.Item'
+        type: array
+      message:
+        example: Items retrieved successfully
+        type: string
+      total:
+        description: Total count of items
+        example: 5
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: http://www.example.com/support
+  description: This is a sample CRUD API for inventory management system
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Inventory Management API
+  version: "1.0"
+paths:
+  /items:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all items from the inventory
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ItemsListResponse'
+      summary: Get all items
+      tags:
+      - items
+    post:
+      consumes:
+      - application/json
+      description: Add a new item to the inventory
+      parameters:
+      - description: Item data
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.ItemRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.ItemResponse'
+      summary: Create new item
+      tags:
+      - items
+  /items/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove an item from the inventory
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ItemResponse'
+      summary: Delete item
+      tags:
+      - items
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a specific item by its unique identifier
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ItemResponse'
+      summary: Get item by ID
+      tags:
+      - items
+    put:
+      consumes:
+      - application/json
+      description: Update an existing item's information
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated item data
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.ItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ItemResponse'
+      summary: Update item
+      tags:
+      - items
+  /items/category/{category}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all items in a specific category
+      parameters:
+      - description: Category name
+        in: path
+        name: category
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ItemsListResponse'
+      summary: Get items by category
+      tags:
+      - items
+  /items/search:
+    get:
+      consumes:
+      - application/json
+      description: Search items by name (case-insensitive)
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ItemsListResponse'
+      summary: Search items
+      tags:
+      - items
+swagger: "2.0"
+tags:
+- description: Operations for managing inventory items
+  name: items
