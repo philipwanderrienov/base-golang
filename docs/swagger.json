@@ -18,6 +18,198 @@
     "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
+        "/accounts": {
+            "get": {
+                "description": "Retrieve all accounts from the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get all accounts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountsListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add a new account to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Create a new account",
+                "parameters": [
+                    {
+                        "description": "Account data",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}": {
+            "get": {
+                "description": "Retrieve a specific account by its unique identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get account by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing account by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Update an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated account data",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an account by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Delete an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/items": {
             "get": {
                 "description": "Retrieve all items from the inventory",
@@ -240,6 +432,114 @@
         }
     },
     "definitions": {
+        "models.Account": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "Email address of the account holder",
+                    "type": "string",
+                    "example": "alice@example.com"
+                },
+                "id": {
+                    "description": "Unique identifier for the account",
+                    "type": "string",
+                    "example": "1"
+                },
+                "name": {
+                    "description": "Name of the account holder",
+                    "type": "string",
+                    "example": "Alice Smith"
+                }
+            }
+        },
+        "models.AccountErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "HTTP status code representing the error",
+                    "type": "integer",
+                    "example": 404
+                },
+                "error": {
+                    "description": "Error message describing what went wrong",
+                    "type": "string",
+                    "example": "Account not found"
+                }
+            }
+        },
+        "models.AccountResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Pointer to account, can be nil for empty responses",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Account"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "Message describing the result of the operation",
+                    "type": "string",
+                    "example": "Account retrieved successfully"
+                }
+            }
+        },
+        "models.AccountsListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Slice of accounts",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Account"
+                    }
+                },
+                "message": {
+                    "description": "Message describing the result of the operation",
+                    "type": "string",
+                    "example": "Accounts retrieved successfully"
+                },
+                "total": {
+                    "description": "Total count of accounts",
+                    "type": "integer",
+                    "example": 2
+                }
+            }
+        },
+        "models.CreateAccountRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name"
+            ],
+            "properties": {
+                "email": {
+                    "description": "Email address of the account holder",
+                    "type": "string",
+                    "example": "alice@example.com"
+                },
+                "name": {
+                    "description": "Name of the account holder",
+                    "type": "string",
+                    "example": "Alice Smith"
+                }
+            }
+        },
+        "models.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "HTTP status code",
+                    "type": "integer",
+                    "example": 404
+                },
+                "error": {
+                    "type": "string",
+                    "example": "Item not found"
+                }
+            }
+        },
         "models.Item": {
             "type": "object",
             "properties": {
@@ -343,12 +643,31 @@
                     "example": 5
                 }
             }
+        },
+        "models.UpdateAccountRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "Email address of the account holder",
+                    "type": "string",
+                    "example": "alice@example.com"
+                },
+                "name": {
+                    "description": "Name of the account holder",
+                    "type": "string",
+                    "example": "Alice Smith"
+                }
+            }
         }
     },
     "tags": [
         {
             "description": "Operations for managing inventory items",
             "name": "items"
+        },
+        {
+            "description": "Operations for managing accounts",
+            "name": "accounts"
         }
     ]
 }

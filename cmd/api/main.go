@@ -32,14 +32,18 @@ import (
 
 // @tag.name items
 // @tag.description Operations for managing inventory items
+// @tag.name accounts
+// @tag.description Operations for managing accounts
 func main() {
-	// Initialize the repository with dummy data
-	// This acts as our "database" layer in the microservices architecture
-	repo := repository.NewItemRepository()
+	// Initialize repositories with dummy data
+	// These acts as our "database" layer in the microservices architecture
+	itemRepo := repository.NewItemRepository()
+	accountRepo := repository.NewAccountRepository()
 
-	// Initialize the handler (service layer)
-	// This handles business logic and request processing
-	handler := handlers.NewItemHandler(repo)
+	// Initialize handlers (service layer)
+	// These handle business logic and request processing
+	itemHandler := handlers.NewItemHandler(itemRepo)
+	accountHandler := handlers.NewAccountHandler(accountRepo)
 
 	// Create a new Gin router
 	// Gin is a web framework that provides HTTP request handling
@@ -50,7 +54,8 @@ func main() {
 	v1 := r.Group("/api/v1")
 	{
 		// register resource-specific route groups
-		routes.RegisterItemRoutes(v1, handler)
+		routes.RegisterItemRoutes(v1, itemHandler)
+		routes.RegisterAccountRoutes(v1, accountHandler)
 	}
 
 	// Swagger documentation route
