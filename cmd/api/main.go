@@ -12,6 +12,7 @@ import (
 
 	"github.com/user/gocrud-api/internal/handlers"
 	"github.com/user/gocrud-api/internal/repository"
+	"github.com/user/gocrud-api/internal/routes"
 )
 
 // @title Inventory Management API
@@ -48,32 +49,8 @@ func main() {
 	// This allows for versioning of our API
 	v1 := r.Group("/api/v1")
 	{
-		// Register item routes
-		items := v1.Group("/items")
-		{
-			// CRUD Operations:
-			// 1. GET /items - Retrieve all items (list all)
-			items.GET("", handler.GetAllItems)
-
-			// 2. GET /items/:id - Retrieve a specific item by ID
-			items.GET("/:id", handler.GetItemByID)
-
-			// 3. POST /items - Create a new item
-			items.POST("", handler.CreateItem)
-
-			// 4. PUT /items/:id - Update an existing item
-			items.PUT("/:id", handler.UpdateItem)
-
-			// 5. DELETE /items/:id - Delete an item
-			items.DELETE("/:id", handler.DeleteItem)
-
-			// Additional Operations:
-			// 6. GET /items/search - Search items by name
-			items.GET("/search", handler.SearchItems)
-
-			// 7. GET /items/category/:category - Get items by category
-			items.GET("/category/:category", handler.GetItemsByCategory)
-		}
+		// register resource-specific route groups
+		routes.RegisterItemRoutes(v1, handler)
 	}
 
 	// Swagger documentation route
