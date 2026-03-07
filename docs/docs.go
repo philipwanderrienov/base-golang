@@ -216,6 +216,189 @@ const docTemplate = `{
                 }
             }
         },
+        "/congregations": {
+            "get": {
+                "description": "Retrieve all congregations from the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "congregations"
+                ],
+                "summary": "Get all congregations",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationsListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add a new congregation to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "congregations"
+                ],
+                "summary": "Create a new congregation",
+                "parameters": [
+                    {
+                        "description": "Congregation data",
+                        "name": "congregation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateCongregationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/congregations/{id}": {
+            "get": {
+                "description": "Retrieve a specific congregation by its unique identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "congregations"
+                ],
+                "summary": "Get congregation by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Congregation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Modify the details of an existing congregation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "congregations"
+                ],
+                "summary": "Update a congregation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Congregation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated congregation data",
+                        "name": "congregation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateCongregationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a congregation from the system by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "congregations"
+                ],
+                "summary": "Delete a congregation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Congregation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/items": {
             "get": {
                 "description": "Retrieve all items from the inventory",
@@ -513,6 +696,81 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Congregation": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "Unique identifier for the congregation",
+                    "type": "string",
+                    "example": "1"
+                },
+                "location": {
+                    "description": "Location of the congregation",
+                    "type": "string",
+                    "example": "City A"
+                },
+                "name": {
+                    "description": "Name of the congregation",
+                    "type": "string",
+                    "example": "First Congregation"
+                }
+            }
+        },
+        "models.CongregationErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "HTTP status code representing the error",
+                    "type": "integer",
+                    "example": 404
+                },
+                "error": {
+                    "description": "Error message describing what went wrong",
+                    "type": "string",
+                    "example": "Congregation not found"
+                }
+            }
+        },
+        "models.CongregationResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Pointer to congregation, can be nil for empty responses",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Congregation"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "Message describing the result of the operation",
+                    "type": "string",
+                    "example": "Congregation retrieved successfully"
+                }
+            }
+        },
+        "models.CongregationsListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Slice of congregations",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Congregation"
+                    }
+                },
+                "message": {
+                    "description": "Message describing the result of the operation",
+                    "type": "string",
+                    "example": "Congregations retrieved successfully"
+                },
+                "total": {
+                    "description": "Total count of congregations",
+                    "type": "integer",
+                    "example": 2
+                }
+            }
+        },
         "models.CreateAccountRequest": {
             "type": "object",
             "required": [
@@ -529,6 +787,25 @@ const docTemplate = `{
                     "description": "Name of the account holder",
                     "type": "string",
                     "example": "Alice Smith"
+                }
+            }
+        },
+        "models.CreateCongregationRequest": {
+            "type": "object",
+            "required": [
+                "location",
+                "name"
+            ],
+            "properties": {
+                "location": {
+                    "description": "Location of the congregation",
+                    "type": "string",
+                    "example": "City A"
+                },
+                "name": {
+                    "description": "Name of the congregation",
+                    "type": "string",
+                    "example": "First Congregation"
                 }
             }
         },
@@ -662,6 +939,21 @@ const docTemplate = `{
                     "description": "Name of the account holder",
                     "type": "string",
                     "example": "Alice Smith"
+                }
+            }
+        },
+        "models.UpdateCongregationRequest": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "description": "Location of the congregation",
+                    "type": "string",
+                    "example": "City A"
+                },
+                "name": {
+                    "description": "Name of the congregation",
+                    "type": "string",
+                    "example": "First Congregation"
                 }
             }
         }

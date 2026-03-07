@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/user/gocrud-api/internal/repository"
 	"github.com/user/gocrud-api/internal/models"
+	"github.com/user/gocrud-api/internal/repository"
 )
 
 type AccountHandler struct {

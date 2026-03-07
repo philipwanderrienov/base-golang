@@ -53,6 +53,59 @@ definitions:
         example: 2
         type: integer
     type: object
+  models.Congregation:
+    properties:
+      id:
+        description: Unique identifier for the congregation
+        example: "1"
+        type: string
+      location:
+        description: Location of the congregation
+        example: City A
+        type: string
+      name:
+        description: Name of the congregation
+        example: First Congregation
+        type: string
+    type: object
+  models.CongregationErrorResponse:
+    properties:
+      code:
+        description: HTTP status code representing the error
+        example: 404
+        type: integer
+      error:
+        description: Error message describing what went wrong
+        example: Congregation not found
+        type: string
+    type: object
+  models.CongregationResponse:
+    properties:
+      data:
+        allOf:
+        - $ref: '#/definitions/models.Congregation'
+        description: Pointer to congregation, can be nil for empty responses
+      message:
+        description: Message describing the result of the operation
+        example: Congregation retrieved successfully
+        type: string
+    type: object
+  models.CongregationsListResponse:
+    properties:
+      data:
+        description: Slice of congregations
+        items:
+          $ref: '#/definitions/models.Congregation'
+        type: array
+      message:
+        description: Message describing the result of the operation
+        example: Congregations retrieved successfully
+        type: string
+      total:
+        description: Total count of congregations
+        example: 2
+        type: integer
+    type: object
   models.CreateAccountRequest:
     properties:
       email:
@@ -65,6 +118,20 @@ definitions:
         type: string
     required:
     - email
+    - name
+    type: object
+  models.CreateCongregationRequest:
+    properties:
+      location:
+        description: Location of the congregation
+        example: City A
+        type: string
+      name:
+        description: Name of the congregation
+        example: First Congregation
+        type: string
+    required:
+    - location
     - name
     type: object
   models.ErrorResponse:
@@ -161,6 +228,17 @@ definitions:
       name:
         description: Name of the account holder
         example: Alice Smith
+        type: string
+    type: object
+  models.UpdateCongregationRequest:
+    properties:
+      location:
+        description: Location of the congregation
+        example: City A
+        type: string
+      name:
+        description: Name of the congregation
+        example: First Congregation
         type: string
     type: object
 host: localhost:8080
@@ -304,6 +382,127 @@ paths:
       summary: Update an account
       tags:
       - accounts
+  /congregations:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all congregations from the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CongregationsListResponse'
+      summary: Get all congregations
+      tags:
+      - congregations
+    post:
+      consumes:
+      - application/json
+      description: Add a new congregation to the system
+      parameters:
+      - description: Congregation data
+        in: body
+        name: congregation
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateCongregationRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.CongregationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.CongregationErrorResponse'
+      summary: Create a new congregation
+      tags:
+      - congregations
+  /congregations/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a congregation from the system by its ID
+      parameters:
+      - description: Congregation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.CongregationErrorResponse'
+      summary: Delete a congregation
+      tags:
+      - congregations
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a specific congregation by its unique identifier
+      parameters:
+      - description: Congregation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CongregationResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.CongregationErrorResponse'
+      summary: Get congregation by ID
+      tags:
+      - congregations
+    put:
+      consumes:
+      - application/json
+      description: Modify the details of an existing congregation
+      parameters:
+      - description: Congregation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated congregation data
+        in: body
+        name: congregation
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateCongregationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CongregationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.CongregationErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.CongregationErrorResponse'
+      summary: Update a congregation
+      tags:
+      - congregations
   /items:
     get:
       consumes:

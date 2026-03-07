@@ -39,11 +39,13 @@ func main() {
 	// These acts as our "database" layer in the microservices architecture
 	itemRepo := repository.NewItemRepository()
 	accountRepo := repository.NewAccountRepository()
+	congregationRepo := repository.NewCongregationRepository()
 
 	// Initialize handlers (service layer)
 	// These handle business logic and request processing
 	itemHandler := handlers.NewItemHandler(itemRepo)
 	accountHandler := handlers.NewAccountHandler(accountRepo)
+	congregationHandler := handlers.NewCongregationHandler(congregationRepo)
 
 	// Create a new Gin router
 	// Gin is a web framework that provides HTTP request handling
@@ -56,6 +58,7 @@ func main() {
 		// register resource-specific route groups
 		routes.RegisterItemRoutes(v1, itemHandler)
 		routes.RegisterAccountRoutes(v1, accountHandler)
+		routes.RegisterCongregationRoutes(v1, congregationHandler)
 	}
 
 	// Swagger documentation route
