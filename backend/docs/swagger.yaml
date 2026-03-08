@@ -1,0 +1,656 @@
+basePath: /api/v1
+definitions:
+  models.Account:
+    properties:
+      email:
+        description: Email address of the account holder
+        example: alice@example.com
+        type: string
+      id:
+        description: Unique identifier for the account
+        example: "1"
+        type: string
+      name:
+        description: Name of the account holder
+        example: Alice Smith
+        type: string
+    type: object
+  models.AccountErrorResponse:
+    properties:
+      code:
+        description: HTTP status code representing the error
+        example: 404
+        type: integer
+      error:
+        description: Error message describing what went wrong
+        example: Account not found
+        type: string
+    type: object
+  models.AccountResponse:
+    properties:
+      data:
+        allOf:
+        - $ref: '#/definitions/models.Account'
+        description: Pointer to account, can be nil for empty responses
+      message:
+        description: Message describing the result of the operation
+        example: Account retrieved successfully
+        type: string
+    type: object
+  models.AccountsListResponse:
+    properties:
+      data:
+        description: Slice of accounts
+        items:
+          $ref: '#/definitions/models.Account'
+        type: array
+      message:
+        description: Message describing the result of the operation
+        example: Accounts retrieved successfully
+        type: string
+      total:
+        description: Total count of accounts
+        example: 2
+        type: integer
+    type: object
+  models.Congregation:
+    properties:
+      id:
+        description: Unique identifier for the congregation
+        example: "1"
+        type: string
+      location:
+        description: Location of the congregation
+        example: City A
+        type: string
+      name:
+        description: Name of the congregation
+        example: First Congregation
+        type: string
+    type: object
+  models.CongregationErrorResponse:
+    properties:
+      code:
+        description: HTTP status code representing the error
+        example: 404
+        type: integer
+      error:
+        description: Error message describing what went wrong
+        example: Congregation not found
+        type: string
+    type: object
+  models.CongregationResponse:
+    properties:
+      data:
+        allOf:
+        - $ref: '#/definitions/models.Congregation'
+        description: Pointer to congregation, can be nil for empty responses
+      message:
+        description: Message describing the result of the operation
+        example: Congregation retrieved successfully
+        type: string
+    type: object
+  models.CongregationsListResponse:
+    properties:
+      data:
+        description: Slice of congregations
+        items:
+          $ref: '#/definitions/models.Congregation'
+        type: array
+      message:
+        description: Message describing the result of the operation
+        example: Congregations retrieved successfully
+        type: string
+      total:
+        description: Total count of congregations
+        example: 2
+        type: integer
+    type: object
+  models.CreateAccountRequest:
+    properties:
+      email:
+        description: Email address of the account holder
+        example: alice@example.com
+        type: string
+      name:
+        description: Name of the account holder
+        example: Alice Smith
+        type: string
+    required:
+    - email
+    - name
+    type: object
+  models.CreateCongregationRequest:
+    properties:
+      location:
+        description: Location of the congregation
+        example: City A
+        type: string
+      name:
+        description: Name of the congregation
+        example: First Congregation
+        type: string
+    required:
+    - location
+    - name
+    type: object
+  models.ErrorResponse:
+    properties:
+      code:
+        description: HTTP status code
+        example: 404
+        type: integer
+      error:
+        example: Item not found
+        type: string
+    type: object
+  models.Item:
+    properties:
+      category:
+        description: Category the item belongs to
+        example: Electronics
+        type: string
+      description:
+        description: Detailed description of the item
+        example: MacBook Pro
+        type: string
+      id:
+        description: Unique identifier for the item
+        example: 1
+        type: integer
+      name:
+        description: Name of the item
+        example: Laptop
+        type: string
+      price:
+        description: Price of the item in dollars
+        example: 1500
+        type: integer
+      quantity:
+        description: Available quantity in stock
+        example: 10
+        type: integer
+    type: object
+  models.ItemRequest:
+    properties:
+      category:
+        example: Electronics
+        type: string
+      description:
+        example: MacBook Pro
+        type: string
+      name:
+        example: Laptop
+        type: string
+      price:
+        example: 1500
+        type: integer
+      quantity:
+        example: 10
+        type: integer
+    required:
+    - category
+    - name
+    - price
+    - quantity
+    type: object
+  models.ItemResponse:
+    properties:
+      data:
+        allOf:
+        - $ref: '#/definitions/models.Item'
+        description: Pointer to item, can be nil for empty responses
+      message:
+        example: Item retrieved successfully
+        type: string
+    type: object
+  models.ItemsListResponse:
+    properties:
+      data:
+        description: Slice of items
+        items:
+          $ref: '#/definitions/models.Item'
+        type: array
+      message:
+        example: Items retrieved successfully
+        type: string
+      total:
+        description: Total count of items
+        example: 5
+        type: integer
+    type: object
+  models.UpdateAccountRequest:
+    properties:
+      email:
+        description: Email address of the account holder
+        example: alice@example.com
+        type: string
+      name:
+        description: Name of the account holder
+        example: Alice Smith
+        type: string
+    type: object
+  models.UpdateCongregationRequest:
+    properties:
+      location:
+        description: Location of the congregation
+        example: City A
+        type: string
+      name:
+        description: Name of the congregation
+        example: First Congregation
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: http://www.example.com/support
+  description: This is a sample CRUD API for inventory management system
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Inventory Management API
+  version: "1.0"
+paths:
+  /accounts:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all accounts from the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AccountsListResponse'
+      summary: Get all accounts
+      tags:
+      - accounts
+    post:
+      consumes:
+      - application/json
+      description: Add a new account to the system
+      parameters:
+      - description: Account data
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.AccountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.AccountErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create a new account
+      tags:
+      - accounts
+  /accounts/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an account by its ID
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AccountResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.AccountErrorResponse'
+      summary: Delete an account
+      tags:
+      - accounts
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a specific account by its unique identifier
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AccountResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get account by ID
+      tags:
+      - accounts
+    put:
+      consumes:
+      - application/json
+      description: Update an existing account by its ID
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated account data
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AccountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.AccountErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Update an account
+      tags:
+      - accounts
+  /congregations:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all congregations from the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CongregationsListResponse'
+      summary: Get all congregations
+      tags:
+      - congregations
+    post:
+      consumes:
+      - application/json
+      description: Add a new congregation to the system
+      parameters:
+      - description: Congregation data
+        in: body
+        name: congregation
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateCongregationRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.CongregationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.CongregationErrorResponse'
+      summary: Create a new congregation
+      tags:
+      - congregations
+  /congregations/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a congregation from the system by its ID
+      parameters:
+      - description: Congregation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.CongregationErrorResponse'
+      summary: Delete a congregation
+      tags:
+      - congregations
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a specific congregation by its unique identifier
+      parameters:
+      - description: Congregation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CongregationResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.CongregationErrorResponse'
+      summary: Get congregation by ID
+      tags:
+      - congregations
+    put:
+      consumes:
+      - application/json
+      description: Modify the details of an existing congregation
+      parameters:
+      - description: Congregation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated congregation data
+        in: body
+        name: congregation
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateCongregationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CongregationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.CongregationErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.CongregationErrorResponse'
+      summary: Update a congregation
+      tags:
+      - congregations
+  /items:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all items from the inventory
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ItemsListResponse'
+      summary: Get all items
+      tags:
+      - items
+    post:
+      consumes:
+      - application/json
+      description: Add a new item to the inventory
+      parameters:
+      - description: Item data
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.ItemRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.ItemResponse'
+      summary: Create new item
+      tags:
+      - items
+  /items/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove an item from the inventory
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ItemResponse'
+      summary: Delete item
+      tags:
+      - items
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a specific item by its unique identifier
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ItemResponse'
+      summary: Get item by ID
+      tags:
+      - items
+    put:
+      consumes:
+      - application/json
+      description: Update an existing item's information
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated item data
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.ItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ItemResponse'
+      summary: Update item
+      tags:
+      - items
+  /items/category/{category}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all items in a specific category
+      parameters:
+      - description: Category name
+        in: path
+        name: category
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ItemsListResponse'
+      summary: Get items by category
+      tags:
+      - items
+  /items/search:
+    get:
+      consumes:
+      - application/json
+      description: Search items by name (case-insensitive)
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ItemsListResponse'
+      summary: Search items
+      tags:
+      - items
+swagger: "2.0"
+tags:
+- description: Operations for managing inventory items
+  name: items
+- description: Operations for managing accounts
+  name: accounts

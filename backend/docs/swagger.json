@@ -1,0 +1,965 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample CRUD API for inventory management system",
+        "title": "Inventory Management API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.example.com/support",
+            "email": "support@example.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/accounts": {
+            "get": {
+                "description": "Retrieve all accounts from the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get all accounts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountsListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add a new account to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Create a new account",
+                "parameters": [
+                    {
+                        "description": "Account data",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}": {
+            "get": {
+                "description": "Retrieve a specific account by its unique identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get account by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing account by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Update an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated account data",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an account by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Delete an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/congregations": {
+            "get": {
+                "description": "Retrieve all congregations from the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "congregations"
+                ],
+                "summary": "Get all congregations",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationsListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add a new congregation to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "congregations"
+                ],
+                "summary": "Create a new congregation",
+                "parameters": [
+                    {
+                        "description": "Congregation data",
+                        "name": "congregation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateCongregationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/congregations/{id}": {
+            "get": {
+                "description": "Retrieve a specific congregation by its unique identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "congregations"
+                ],
+                "summary": "Get congregation by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Congregation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Modify the details of an existing congregation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "congregations"
+                ],
+                "summary": "Update a congregation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Congregation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated congregation data",
+                        "name": "congregation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateCongregationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a congregation from the system by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "congregations"
+                ],
+                "summary": "Delete a congregation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Congregation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.CongregationErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/items": {
+            "get": {
+                "description": "Retrieve all items from the inventory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Get all items",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemsListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add a new item to the inventory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Item data",
+                        "name": "item",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/items/category/{category}": {
+            "get": {
+                "description": "Retrieve all items in a specific category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Get items by category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category name",
+                        "name": "category",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemsListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/items/search": {
+            "get": {
+                "description": "Search items by name (case-insensitive)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Search items",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search query",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemsListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/items/{id}": {
+            "get": {
+                "description": "Retrieve a specific item by its unique identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing item's information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Update item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated item data",
+                        "name": "item",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove an item from the inventory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Delete item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Account": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "Email address of the account holder",
+                    "type": "string",
+                    "example": "alice@example.com"
+                },
+                "id": {
+                    "description": "Unique identifier for the account",
+                    "type": "string",
+                    "example": "1"
+                },
+                "name": {
+                    "description": "Name of the account holder",
+                    "type": "string",
+                    "example": "Alice Smith"
+                }
+            }
+        },
+        "models.AccountErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "HTTP status code representing the error",
+                    "type": "integer",
+                    "example": 404
+                },
+                "error": {
+                    "description": "Error message describing what went wrong",
+                    "type": "string",
+                    "example": "Account not found"
+                }
+            }
+        },
+        "models.AccountResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Pointer to account, can be nil for empty responses",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Account"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "Message describing the result of the operation",
+                    "type": "string",
+                    "example": "Account retrieved successfully"
+                }
+            }
+        },
+        "models.AccountsListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Slice of accounts",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Account"
+                    }
+                },
+                "message": {
+                    "description": "Message describing the result of the operation",
+                    "type": "string",
+                    "example": "Accounts retrieved successfully"
+                },
+                "total": {
+                    "description": "Total count of accounts",
+                    "type": "integer",
+                    "example": 2
+                }
+            }
+        },
+        "models.Congregation": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "Unique identifier for the congregation",
+                    "type": "string",
+                    "example": "1"
+                },
+                "location": {
+                    "description": "Location of the congregation",
+                    "type": "string",
+                    "example": "City A"
+                },
+                "name": {
+                    "description": "Name of the congregation",
+                    "type": "string",
+                    "example": "First Congregation"
+                }
+            }
+        },
+        "models.CongregationErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "HTTP status code representing the error",
+                    "type": "integer",
+                    "example": 404
+                },
+                "error": {
+                    "description": "Error message describing what went wrong",
+                    "type": "string",
+                    "example": "Congregation not found"
+                }
+            }
+        },
+        "models.CongregationResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Pointer to congregation, can be nil for empty responses",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Congregation"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "Message describing the result of the operation",
+                    "type": "string",
+                    "example": "Congregation retrieved successfully"
+                }
+            }
+        },
+        "models.CongregationsListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Slice of congregations",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Congregation"
+                    }
+                },
+                "message": {
+                    "description": "Message describing the result of the operation",
+                    "type": "string",
+                    "example": "Congregations retrieved successfully"
+                },
+                "total": {
+                    "description": "Total count of congregations",
+                    "type": "integer",
+                    "example": 2
+                }
+            }
+        },
+        "models.CreateAccountRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name"
+            ],
+            "properties": {
+                "email": {
+                    "description": "Email address of the account holder",
+                    "type": "string",
+                    "example": "alice@example.com"
+                },
+                "name": {
+                    "description": "Name of the account holder",
+                    "type": "string",
+                    "example": "Alice Smith"
+                }
+            }
+        },
+        "models.CreateCongregationRequest": {
+            "type": "object",
+            "required": [
+                "location",
+                "name"
+            ],
+            "properties": {
+                "location": {
+                    "description": "Location of the congregation",
+                    "type": "string",
+                    "example": "City A"
+                },
+                "name": {
+                    "description": "Name of the congregation",
+                    "type": "string",
+                    "example": "First Congregation"
+                }
+            }
+        },
+        "models.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "HTTP status code",
+                    "type": "integer",
+                    "example": 404
+                },
+                "error": {
+                    "type": "string",
+                    "example": "Item not found"
+                }
+            }
+        },
+        "models.Item": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "description": "Category the item belongs to",
+                    "type": "string",
+                    "example": "Electronics"
+                },
+                "description": {
+                    "description": "Detailed description of the item",
+                    "type": "string",
+                    "example": "MacBook Pro"
+                },
+                "id": {
+                    "description": "Unique identifier for the item",
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "description": "Name of the item",
+                    "type": "string",
+                    "example": "Laptop"
+                },
+                "price": {
+                    "description": "Price of the item in dollars",
+                    "type": "integer",
+                    "example": 1500
+                },
+                "quantity": {
+                    "description": "Available quantity in stock",
+                    "type": "integer",
+                    "example": 10
+                }
+            }
+        },
+        "models.ItemRequest": {
+            "type": "object",
+            "required": [
+                "category",
+                "name",
+                "price",
+                "quantity"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string",
+                    "example": "Electronics"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "MacBook Pro"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Laptop"
+                },
+                "price": {
+                    "type": "integer",
+                    "example": 1500
+                },
+                "quantity": {
+                    "type": "integer",
+                    "example": 10
+                }
+            }
+        },
+        "models.ItemResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Pointer to item, can be nil for empty responses",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Item"
+                        }
+                    ]
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Item retrieved successfully"
+                }
+            }
+        },
+        "models.ItemsListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Slice of items",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Item"
+                    }
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Items retrieved successfully"
+                },
+                "total": {
+                    "description": "Total count of items",
+                    "type": "integer",
+                    "example": 5
+                }
+            }
+        },
+        "models.UpdateAccountRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "Email address of the account holder",
+                    "type": "string",
+                    "example": "alice@example.com"
+                },
+                "name": {
+                    "description": "Name of the account holder",
+                    "type": "string",
+                    "example": "Alice Smith"
+                }
+            }
+        },
+        "models.UpdateCongregationRequest": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "description": "Location of the congregation",
+                    "type": "string",
+                    "example": "City A"
+                },
+                "name": {
+                    "description": "Name of the congregation",
+                    "type": "string",
+                    "example": "First Congregation"
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "description": "Operations for managing inventory items",
+            "name": "items"
+        },
+        {
+            "description": "Operations for managing accounts",
+            "name": "accounts"
+        }
+    ]
+}
