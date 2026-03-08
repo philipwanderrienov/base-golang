@@ -26,7 +26,14 @@ func NewAccountHandler(repo *repository.AccountRepository) *AccountHandler {
 // @Success 200 {object} models.AccountsListResponse
 // @Router /accounts [get]
 func (h *AccountHandler) GetAllAccounts(c *gin.Context) {
-	accounts := h.repo.GetAll()
+	accounts, err := h.repo.GetAll()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Failed to retrieve accounts",
+			Code:  500,
+		})
+		return
+	}
 	c.JSON(http.StatusOK, models.AccountsListResponse{
 		Message: "Accounts retrieved successfully",
 		Data:    accounts,
@@ -49,6 +56,13 @@ func (h *AccountHandler) GetAccountByID(c *gin.Context) {
 	id := c.Param("id")
 	account, err := h.repo.GetByID(id)
 	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Failed to retrieve account",
+			Code:  500,
+		})
+		return
+	}
+	if account == nil {
 		c.JSON(http.StatusNotFound, models.ErrorResponse{
 			Error: "Account not found",
 			Code:  404,
@@ -125,9 +139,9 @@ func (h *AccountHandler) UpdateAccount(c *gin.Context) {
 
 	account, err := h.repo.Update(id, req)
 	if err != nil {
-		c.JSON(http.StatusNotFound, models.ErrorResponse{
-			Error: "Account not found",
-			Code:  404,
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Failed to update account",
+			Code:  500,
 		})
 		return
 	}
@@ -153,9 +167,9 @@ func (h *AccountHandler) DeleteAccount(c *gin.Context) {
 	id := c.Param("id")
 	err := h.repo.Delete(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, models.AccountErrorResponse{
-			Error: "Account not found",
-			Code:  404,
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Failed to delete account",
+			Code:  500,
 		})
 		return
 	}

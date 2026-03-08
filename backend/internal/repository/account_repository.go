@@ -1,95 +1,88 @@
 package repository
 
 import (
-	"fmt"
-	"sync"
+	"database/sql"
 
+	"github.com/google/uuid"
 	"github.com/user/gocrud-api/internal/models"
 )
 
 // AccountRepository is the data access layer for accounts
-// In a real application, this would interface with a database
-// Here we use an in-memory slice with thread-safe operations using mutex
 type AccountRepository struct {
-	accounts []models.Account
-	mu       sync.RWMutex
-	nextID   int
+	db *sql.DB
 }
 
-// NewAccountRepository creates a new account repository with dummy data
-func NewAccountRepository() *AccountRepository {
-	return &AccountRepository{
-		accounts: []models.Account{
-			{ID: "1", Name: "Alice Smith", Email: "alice@example.com"},
-			{ID: "2", Name: "Bob Johnson", Email: "bob@example.com"},
-		},
-		nextID: 3,
-	}
+// NewAccountRepository creates a new account repository
+func NewAccountRepository(db *sql.DB) *AccountRepository {
+	return &AccountRepository{db: db}
 }
 
 // GetAll returns all accounts
-func (r *AccountRepository) GetAll() []models.Account {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	return r.accounts
+func (r *AccountRepository) GetAll() ([]models.Account, error) {
+	rows, err := r.db.Query("SELECT id, name, email FROM accounts")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var accounts []models.Account
+	for rows.Next() {
+		var account models.Account
+		if err := rows.Scan(&account.ID, &account.Name, &account.Email); err != nil {
+			return nil, err
+		}
+		accounts = append(accounts, account)
+	}
+	return accounts, nil
 }
 
 // GetByID retrieves an account by ID
 func (r *AccountRepository) GetByID(id string) (*models.Account, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	for _, account := range r.accounts {
-		if account.ID == id {
-			return &account, nil
+	var account models.Account
+	err := r.db.QueryRow("SELECT id, name, email FROM accounts WHERE id = $1", id).Scan(
+		&account.ID, &account.Name, &account.Email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
 		}
+		return nil, err
 	}
-	return nil, fmt.Errorf("account not found")
+	return &account, nil
 }
 
 // Create adds a new account
 func (r *AccountRepository) Create(req models.CreateAccountRequest) (*models.Account, error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
+	id := uuid.New().String()
 	account := models.Account{
-		ID:    fmt.Sprintf("%d", r.nextID),
+		ID:    id,
 		Name:  req.Name,
 		Email: req.Email,
 	}
-	r.nextID++
-	r.accounts = append(r.accounts, account)
+	_, err := r.db.Exec("INSERT INTO accounts (id, name, email) VALUES ($1, $2, $3)",
+		account.ID, account.Name, account.Email)
+	if err != nil {
+		return nil, err
+	}
 	return &account, nil
 }
 
 // Update modifies an existing account
 func (r *AccountRepository) Update(id string, req models.UpdateAccountRequest) (*models.Account, error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
-	for i, account := range r.accounts {
-		if account.ID == id {
-			updated := models.Account{
-				ID:    id,
-				Name:  req.Name,
-				Email: req.Email,
-			}
-			r.accounts[i] = updated
-			return &updated, nil
-		}
+	_, err := r.db.Exec("UPDATE accounts SET name = $1, email = $2 WHERE id = $3",
+		req.Name, req.Email, id)
+	if err != nil {
+		return nil, err
 	}
-	return nil, fmt.Errorf("account not found")
+	account := models.Account{
+		ID:    id,
+		Name:  req.Name,
+		Email: req.Email,
+	}
+	return &account, nil
 }
 
 // Delete removes an account by ID
 func (r *AccountRepository) Delete(id string) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
-	for i, account := range r.accounts {
-		if account.ID == id {
-			r.accounts = append(r.accounts[:i], r.accounts[i+1:]...)
-			return nil
-		}
-	}
-	return fmt.Errorf("account not found")
+	_, err := r.db.Exec("DELETE FROM accounts WHERE id = $1", id)
+	return err
 }

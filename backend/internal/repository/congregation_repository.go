@@ -1,208 +1,91 @@
 package repository
 
 import (
-	"fmt"
-	"net/http"
-	"sync"
+	"database/sql"
+	"log"
 
-	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/user/gocrud-api/internal/models"
 )
 
 // CongregationRepository is the data access layer for congregations
-// In a real application, this would interface with a database
-// Here we use an in-memory slice with thread-safe operations using mutex
 type CongregationRepository struct {
-	congregations []models.Congregation
-	mu            sync.RWMutex
-	nextID        int
+	db *sql.DB
 }
 
-// CongregationHandler handles HTTP requests for congregations
-type CongregationHandler struct {
-	repo *CongregationRepository
-}
-
-// NewCongregationRepository creates a new congregation repository with dummy data
-func NewCongregationRepository() *CongregationRepository {
-	return &CongregationRepository{
-		congregations: []models.Congregation{
-			{ID: "1", Name: "First Congregation", Location: "City A"},
-			{ID: "2", Name: "Second Congregation", Location: "City B"},
-		},
-		nextID: 3,
-	}
-}
-
-// NewCongregationHandler creates a new congregation handler
-func NewCongregationHandler(repo *CongregationRepository) *CongregationHandler {
-	return &CongregationHandler{repo: repo}
+// NewCongregationRepository creates a new congregation repository
+func NewCongregationRepository(db *sql.DB) *CongregationRepository {
+	return &CongregationRepository{db: db}
 }
 
 // GetAll returns all congregations
-func (r *CongregationRepository) GetAll() []models.Congregation {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	return r.congregations
+func (r *CongregationRepository) GetAll() ([]models.Congregation, error) {
+	rows, err := r.db.Query("SELECT id, name, location FROM congregations")
+	if err != nil {
+		// log the SQL error for troubleshooting
+		log.Printf("error querying congregations: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var congregations []models.Congregation
+	for rows.Next() {
+		var congregation models.Congregation
+		if err := rows.Scan(&congregation.ID, &congregation.Name, &congregation.Location); err != nil {
+			return nil, err
+		}
+		congregations = append(congregations, congregation)
+	}
+	return congregations, nil
 }
 
 // GetByID retrieves a congregation by ID
 func (r *CongregationRepository) GetByID(id string) (*models.Congregation, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	for _, congregation := range r.congregations {
-		if congregation.ID == id {
-			return &congregation, nil
+	var congregation models.Congregation
+	err := r.db.QueryRow("SELECT id, name, location FROM congregations WHERE id = $1", id).Scan(
+		&congregation.ID, &congregation.Name, &congregation.Location)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
 		}
+		return nil, err
 	}
-	return nil, fmt.Errorf("congregation not found")
+	return &congregation, nil
 }
 
 // Create adds a new congregation
 func (r *CongregationRepository) Create(req models.CreateCongregationRequest) (*models.Congregation, error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
+	id := uuid.New().String()
 	congregation := models.Congregation{
-		ID:       fmt.Sprintf("%d", r.nextID),
+		ID:       id,
 		Name:     req.Name,
 		Location: req.Location,
 	}
-	r.nextID++
-	r.congregations = append(r.congregations, congregation)
-
+	_, err := r.db.Exec("INSERT INTO congregations (id, name, location) VALUES ($1, $2, $3)",
+		congregation.ID, congregation.Name, congregation.Location)
+	if err != nil {
+		return nil, err
+	}
 	return &congregation, nil
 }
 
 // Update modifies an existing congregation
 func (r *CongregationRepository) Update(id string, req models.UpdateCongregationRequest) (*models.Congregation, error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
-	for i, congregation := range r.congregations {
-		if congregation.ID == id {
-			if req.Name != "" {
-				r.congregations[i].Name = req.Name
-			}
-			if req.Location != "" {
-				r.congregations[i].Location = req.Location
-			}
-			return &r.congregations[i], nil
-		}
+	_, err := r.db.Exec("UPDATE congregations SET name = $1, location = $2 WHERE id = $3",
+		req.Name, req.Location, id)
+	if err != nil {
+		return nil, err
 	}
-	return nil, fmt.Errorf("congregation not found")
+	congregation := models.Congregation{
+		ID:       id,
+		Name:     req.Name,
+		Location: req.Location,
+	}
+	return &congregation, nil
 }
 
 // Delete removes a congregation by ID
 func (r *CongregationRepository) Delete(id string) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
-	for i, congregation := range r.congregations {
-		if congregation.ID == id {
-			r.congregations = append(r.congregations[:i], r.congregations[i+1:]...)
-			return nil
-		}
-	}
-	return fmt.Errorf("congregation not found")
-}
-
-// CreateCongregation handles POST /congregations
-// Creates a new congregation
-// @Summary Create a new congregation
-// @Description Add a new congregation to the system
-// @Tags congregations
-// @Accept json
-// @Produce json
-// @Param congregation body models.CreateCongregationRequest true "Congregation data"
-// @Success 201 {object} models.CongregationResponse
-// @Failure 400 {object} models.CongregationErrorResponse
-// @Router /congregations [post]
-func (h *CongregationHandler) CreateCongregation(c *gin.Context) {
-	var req models.CreateCongregationRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, models.CongregationErrorResponse{
-			Error: "Invalid request data",
-			Code:  400,
-		})
-		return
-	}
-
-	congregation, err := h.repo.Create(req)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
-			Error: "Failed to create congregation",
-			Code:  500,
-		})
-		return
-	}
-
-	c.JSON(http.StatusCreated, models.CongregationResponse{
-		Message: "Congregation created successfully",
-		Data:    congregation,
-	})
-}
-
-// UpdateCongregation handles PUT /congregations/:id
-// Updates an existing congregation
-// @Summary Update a congregation
-// @Description Modify the details of an existing congregation
-// @Tags congregations
-// @Accept json
-// @Produce json
-// @Param id path string true "Congregation ID"
-// @Param congregation body models.UpdateCongregationRequest true "Updated congregation data"
-// @Success 200 {object} models.CongregationResponse
-// @Failure 400 {object} models.CongregationErrorResponse
-// @Failure 404 {object} models.CongregationErrorResponse
-// @Router /congregations/{id} [put]
-func (h *CongregationHandler) UpdateCongregation(c *gin.Context) {
-	id := c.Param("id")
-	var req models.UpdateCongregationRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, models.CongregationErrorResponse{
-			Error: "Invalid request data",
-			Code:  400,
-		})
-		return
-	}
-
-	congregation, err := h.repo.Update(id, req)
-	if err != nil {
-		c.JSON(http.StatusNotFound, models.CongregationErrorResponse{
-			Error: "Congregation not found",
-			Code:  404,
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, models.CongregationResponse{
-		Message: "Congregation updated successfully",
-		Data:    congregation,
-	})
-}
-
-// DeleteCongregation handles DELETE /congregations/:id
-// Deletes a congregation by ID
-// @Summary Delete a congregation
-// @Description Remove a congregation from the system by its ID
-// @Tags congregations
-// @Accept json
-// @Produce json
-// @Param id path string true "Congregation ID"
-// @Success 204 "No Content"
-// @Failure 404 {object} models.CongregationErrorResponse
-// @Router /congregations/{id} [delete]
-func (h *CongregationHandler) DeleteCongregation(c *gin.Context) {
-	id := c.Param("id")
-
-	if err := h.repo.Delete(id); err != nil {
-		c.JSON(http.StatusNotFound, models.CongregationErrorResponse{
-			Error: "Congregation not found",
-			Code:  404,
-		})
-		return
-	}
-
-	c.Status(http.StatusNoContent)
+	_, err := r.db.Exec("DELETE FROM congregations WHERE id = $1", id)
+	return err
 }

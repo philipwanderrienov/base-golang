@@ -32,7 +32,14 @@ func NewItemHandler(repo *repository.ItemRepository) *ItemHandler {
 // @Success 200 {object} models.ItemsListResponse
 // @Router /items [get]
 func (h *ItemHandler) GetAllItems(c *gin.Context) {
-	items := h.repo.GetAll()
+	items, err := h.repo.GetAll()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Failed to retrieve items",
+			Code:  500,
+		})
+		return
+	}
 	c.JSON(http.StatusOK, models.ItemsListResponse{
 		Message: "Items retrieved successfully",
 		Data:    items,
@@ -62,7 +69,14 @@ func (h *ItemHandler) GetItemByID(c *gin.Context) {
 	}
 
 	// Retrieve item from repository
-	item := h.repo.GetByID(id)
+	item, err := h.repo.GetByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Failed to retrieve item",
+			Code:  500,
+		})
+		return
+	}
 	if item == nil {
 		c.JSON(http.StatusNotFound, models.ErrorResponse{
 			Error: "Item not found",
@@ -108,7 +122,14 @@ func (h *ItemHandler) CreateItem(c *gin.Context) {
 	}
 
 	// Create item in repository
-	created := h.repo.Create(item)
+	created, err := h.repo.Create(item)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Failed to create item",
+			Code:  500,
+		})
+		return
+	}
 
 	c.JSON(http.StatusCreated, models.ItemResponse{
 		Message: "Item created successfully",
@@ -158,11 +179,11 @@ func (h *ItemHandler) UpdateItem(c *gin.Context) {
 	}
 
 	// Update item in repository
-	updated := h.repo.Update(id, item)
-	if updated == nil {
-		c.JSON(http.StatusNotFound, models.ErrorResponse{
-			Error: "Item not found",
-			Code:  404,
+	updated, err := h.repo.Update(id, item)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Failed to update item",
+			Code:  500,
 		})
 		return
 	}
@@ -195,11 +216,11 @@ func (h *ItemHandler) DeleteItem(c *gin.Context) {
 	}
 
 	// Delete item from repository
-	deleted := h.repo.Delete(id)
-	if !deleted {
-		c.JSON(http.StatusNotFound, models.ErrorResponse{
-			Error: "Item not found",
-			Code:  404,
+	err = h.repo.Delete(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Failed to delete item",
+			Code:  500,
 		})
 		return
 	}
@@ -232,7 +253,14 @@ func (h *ItemHandler) SearchItems(c *gin.Context) {
 	}
 
 	// Search items in repository
-	items := h.repo.Search(query)
+	items, err := h.repo.Search(query)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Failed to search items",
+			Code:  500,
+		})
+		return
+	}
 
 	c.JSON(http.StatusOK, models.ItemsListResponse{
 		Message: "Search completed successfully",
@@ -263,7 +291,14 @@ func (h *ItemHandler) GetItemsByCategory(c *gin.Context) {
 	}
 
 	// Get items by category from repository
-	items := h.repo.GetByCategory(category)
+	items, err := h.repo.GetByCategory(category)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Failed to retrieve items",
+			Code:  500,
+		})
+		return
+	}
 
 	c.JSON(http.StatusOK, models.ItemsListResponse{
 		Message: "Items retrieved successfully",

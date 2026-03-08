@@ -26,14 +26,19 @@ func NewCongregationHandler(repo *repository.CongregationRepository) *Congregati
 // @Success 200 {object} models.CongregationsListResponse
 // @Router /congregations [get]
 func (h *CongregationHandler) GetAllCongregations(c *gin.Context) {
-	// This is a placeholder implementation. In a real application, you would retrieve this data from a repository.
+	congregations, err := h.repo.GetAll()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			// Error: "Failed to retrieve congregations",
+			Error: err.Error(), // Include the actual error message for better debugging
+			Code:  500,
+		})
+		return
+	}
 	c.JSON(http.StatusOK, models.CongregationsListResponse{
 		Message: "Congregations retrieved successfully",
-		Data: []models.Congregation{
-			{ID: "1", Name: "First Congregation", Location: "City A"},
-			{ID: "2", Name: "Second Congregation", Location: "City B"},
-		},
-		Total: 2,
+		Data:    congregations,
+		Total:   len(congregations),
 	})
 }
 
@@ -50,23 +55,25 @@ func (h *CongregationHandler) GetAllCongregations(c *gin.Context) {
 // @Router /congregations/{id} [get]
 func (h *CongregationHandler) GetCongregationByID(c *gin.Context) {
 	id := c.Param("id")
-	// This is a placeholder implementation. In a real application, you would retrieve this data from a repository.
-	if id == "1" {
-		c.JSON(http.StatusOK, models.CongregationResponse{
-			Message: "Congregation retrieved successfully",
-			Data:    &models.Congregation{ID: "1", Name: "First Congregation", Location: "City A"},
+	congregation, err := h.repo.GetByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Failed to retrieve congregation",
+			Code:  500,
 		})
-	} else if id == "2" {
-		c.JSON(http.StatusOK, models.CongregationResponse{
-			Message: "Congregation retrieved successfully",
-			Data:    &models.Congregation{ID: "2", Name: "Second Congregation", Location: "City B"},
-		})
-	} else {
+		return
+	}
+	if congregation == nil {
 		c.JSON(http.StatusNotFound, models.CongregationErrorResponse{
 			Error: "Congregation not found",
 			Code:  404,
 		})
+		return
 	}
+	c.JSON(http.StatusOK, models.CongregationResponse{
+		Message: "Congregation retrieved successfully",
+		Data:    congregation,
+	})
 }
 
 // CreateCongregation handles POST /congregations
@@ -90,16 +97,18 @@ func (h *CongregationHandler) CreateCongregation(c *gin.Context) {
 		return
 	}
 
-	// This is a placeholder implementation. In a real application, you would save this data to a repository and generate a unique ID.
-	newCongregation := models.Congregation{
-		ID:       "3", // In a real application, this would be generated
-		Name:     req.Name,
-		Location: req.Location,
+	congregation, err := h.repo.Create(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Failed to create congregation",
+			Code:  500,
+		})
+		return
 	}
 
 	c.JSON(http.StatusCreated, models.CongregationResponse{
 		Message: "Congregation created successfully",
-		Data:    &newCongregation,
+		Data:    congregation,
 	})
 }
 
@@ -127,33 +136,19 @@ func (h *CongregationHandler) UpdateCongregation(c *gin.Context) {
 		return
 	}
 
-	// This is a placeholder implementation. In a real application, you would update this data in a repository.
-	if id == "1" {
-		updatedCongregation := models.Congregation{
-			ID:       "1",
-			Name:     req.Name,
-			Location: req.Location,
-		}
-		c.JSON(http.StatusOK, models.CongregationResponse{
-			Message: "Congregation updated successfully",
-			Data:    &updatedCongregation,
+	congregation, err := h.repo.Update(id, req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Failed to update congregation",
+			Code:  500,
 		})
-	} else if id == "2" {
-		updatedCongregation := models.Congregation{
-			ID:       "2",
-			Name:     req.Name,
-			Location: req.Location,
-		}
-		c.JSON(http.StatusOK, models.CongregationResponse{
-			Message: "Congregation updated successfully",
-			Data:    &updatedCongregation,
-		})
-	} else {
-		c.JSON(http.StatusNotFound, models.CongregationErrorResponse{
-			Error: "Congregation not found",
-			Code:  404,
-		})
+		return
 	}
+
+	c.JSON(http.StatusOK, models.CongregationResponse{
+		Message: "Congregation updated successfully",
+		Data:    congregation,
+	})
 }
 
 // DeleteCongregation handles DELETE /congregations/:id
@@ -169,13 +164,13 @@ func (h *CongregationHandler) UpdateCongregation(c *gin.Context) {
 // @Router /congregations/{id} [delete]
 func (h *CongregationHandler) DeleteCongregation(c *gin.Context) {
 	id := c.Param("id")
-	// This is a placeholder implementation. In a real application, you would delete this data from a repository.
-	if id == "1" || id == "2" {
-		c.Status(http.StatusNoContent)
-	} else {
-		c.JSON(http.StatusNotFound, models.CongregationErrorResponse{
-			Error: "Congregation not found",
-			Code:  404,
+	err := h.repo.Delete(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Failed to delete congregation",
+			Code:  500,
 		})
+		return
 	}
+	c.Status(http.StatusNoContent)
 }
