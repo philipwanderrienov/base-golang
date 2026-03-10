@@ -1,0 +1,57 @@
+@import './base.css';
+@import 'tailwindcss';
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-weight: normal;
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+  padding: 3px;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    display: flex;
+    place-items: center;
+  }
+
+  #app {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 2rem;
+  }
+}
+
+@theme {
+  --color-brand-primary: #3b82f6;
+  --font-sans: 'Inter', ui-sans-serif, system-ui;
+}
+
+/* 1. Define the order of importance */
+@layer base, primevue, utilities;
+
+/* 2. Map Tailwind's base to the first layer */
+@layer base {
+  @tailwind base;
+}
+
+/* 3. The PrimeVue styles will automatically inject into 'primevue' 
+   because of our config in main.js */
+
+/* 4. Utilities (like text-center) go last to ensure they can override anything */
+@layer utilities {
+  @tailwind utilities;
+}

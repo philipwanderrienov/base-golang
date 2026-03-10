@@ -28,7 +28,14 @@ func (r *CongregationRepository) GetAll() ([]models.Congregation, error) {
 	}
 	defer rows.Close()
 
-	var congregations []models.Congregation
+	// ---- this will return nil if there's no data.
+	// ---- we have to return empty array [], so vite won't be error.
+	// ---- because vite will doing .slice() method.
+	// ---- so, we have to send empty array instead of nil
+	// var congregations []models.Congregation
+
+	var congregations []models.Congregation = []models.Congregation{} // this is an empty array[]
+
 	for rows.Next() {
 		var congregation models.Congregation
 		if err := rows.Scan(&congregation.ID, &congregation.Name, &congregation.Location); err != nil {
