@@ -29,8 +29,15 @@ func NewDBConfig() *DBConfig {
 }
 
 func (c *DBConfig) Connect() (*sql.DB, error) {
-	connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
-		c.Host, c.Port, c.User, c.Password, c.DBName, c.SSLMode)
+	var connStr string
+	// Omit the password from the connection string if it's not provided.
+	if c.Password != "" {
+		connStr = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+			c.Host, c.Port, c.User, c.Password, c.DBName, c.SSLMode)
+	} else {
+		connStr = fmt.Sprintf("host=%s port=%d user=%s dbname=%s sslmode=%s",
+			c.Host, c.Port, c.User, c.DBName, c.SSLMode)
+	}
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {

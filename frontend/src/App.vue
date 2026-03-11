@@ -37,9 +37,9 @@ const fetchFromGo = async () => {
 
     // We use result.data because your Go struct says `json:"data"`
     if (result && result.data) {
-        users.value = result.data; 
+      users.value = result.data
     } else {
-        users.value = [];
+      users.value = []
     }
   } catch (error) {
     console.error('API Error:', error)
