@@ -1,15 +1,17 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
+  <div class="about-page">
+    <h2>About Our Application</h2>
+    <p>This page provides information about our project and team.</p>
+    <p>The header, sidebar, and footer remain consistent across all pages.</p>
   </div>
 </template>
 
-<style>
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
+<script setup>
+// Page-specific logic goes here
+</script>
+
+<style scoped>
+.about-page {
+  /* Page-specific styles */
 }
 </style>

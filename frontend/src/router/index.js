@@ -7,7 +7,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      component: HomeView, // HomeView will render inside <router-view> in App.vue
     },
     {
       path: '/about',
@@ -15,8 +15,19 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      component: () => import('../views/AboutView.vue'), // AboutView will render inside <router-view> in App.vue
     },
+    // You can add more routes here for other pages
+    // {
+    //   path: '/profile',
+    //   name: 'profile',
+    //   component: () => import('../views/ProfileView.vue'), // Example new route
+    // },
+    // {
+    //   path: '/settings',
+    //   name: 'settings',
+    //   component: () => import('../views/SettingsView.vue'), // Example new route
+    // },
   ],
 })
 
